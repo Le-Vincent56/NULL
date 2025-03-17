@@ -46,6 +46,8 @@
 	transition-property: translate, scale, rotate, opacity;
     transition-duration: 0.5s;
     opacity: 0.35;
+	background-color: rgba(0, 0, 0, 0);
+	border-color: rgba(0, 0, 0, 0);
 }
 
 .choice:hover {
@@ -56,6 +58,12 @@
 
 .choice.odd:hover {
 	rotate: -1deg;
+}
+
+.choice:active {
+	transition-property: scale;
+	transition-duration: 0.1s;
+	scale: 0.85;
 }
 
 .choice.even:hover {

@@ -1,29 +1,27 @@
 ﻿using DG.Tweening;
-using DG.Tweening.Core.Easing;
 using NULL.Extensions.VisualElements;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UIElements;
 
-namespace NULL.UI.Menus
+namespace NULL.UI.Menus.Main.View
 {
     public class MainMenuView : MenuView
     {
         [Header("Fields")]
         [SerializeField] string title = "null";
         [SerializeField] float marginDuration = 0.5f;
-        [SerializeField] float endScrollDuration = 2f; // total duration of the scroll tween
+        [SerializeField] float endScrollDuration = 2f;
         [SerializeField] float middleScrollDuration = 0.25f;
         [SerializeField] float settleDelay = 0.5f;
-        [SerializeField] float titlePause = 3f; // pause after the margins return
-        [SerializeField] float targetMargin = 20f;   // example margin value
-        [SerializeField] float scrollDistance = 30f; // vertical scroll distance
+        [SerializeField] float titlePause = 3f;
+        [SerializeField] float targetMargin = 20f;
+        [SerializeField] float scrollDistance = 30f;
         [SerializeField] int scrollCycles = 5;
 
         [SerializeField] AnimationCurve rampCurve = AnimationCurve.EaseInOut(0, 0, 1, 1);
 
-        // We'll now use a container and a list of Labels (one per character) instead of one title Label.
         private VisualElement titleContainer;
         private readonly List<Label> letterLabels = new List<Label>();
 
@@ -115,13 +113,26 @@ namespace NULL.UI.Menus
 
                 Sequence masterSequence = DOTween.Sequence();
 
+                Tween marginAdjustmentTween;
+
                 // (1) Margin tween to separate the letters.
-                Tween marginAdjustmentTween = DOTween.To(
-                    () => letter.style.marginRight.value.value,
-                    x => letter.style.marginRight = x,
-                    targetMargin,
-                    marginDuration
-                ).SetEase(Ease.OutQuad);
+                if(i <= (letterLabels.Count - 1) / 2)
+                {
+                    marginAdjustmentTween = DOTween.To(
+                        () => letter.style.marginRight.value.value,
+                        x => letter.style.marginRight = x,
+                        (i == (letterLabels.Count - 1) / 2) ? targetMargin / 2f : targetMargin,
+                        marginDuration
+                    ).SetEase(Ease.OutSine);
+                } else
+                {
+                    marginAdjustmentTween = DOTween.To(
+                        () => letter.style.marginLeft.value.value,
+                        x => letter.style.marginLeft = x,
+                        (i == ((letterLabels.Count - 1) / 2) + 1) ? targetMargin / 2f : targetMargin,
+                        marginDuration
+                    ).SetEase(Ease.OutSine);
+                }
                 masterSequence.Append(marginAdjustmentTween);
 
                 // (2) Settle delay.
@@ -297,12 +308,25 @@ namespace NULL.UI.Menus
                 masterSequence.AppendInterval(settleDelay);
 
                 // (7) Margin correction tween.
-                Tween marginCorrectionTween = DOTween.To(
-                    () => letter.style.marginRight.value.value,
-                    x => letter.style.marginRight = x,
-                    0f,
-                    marginDuration
-                ).SetEase(Ease.OutQuad);
+                Tween marginCorrectionTween;
+                if (i <= (letterLabels.Count - 1) / 2)
+                {
+                    marginCorrectionTween = DOTween.To(
+                        () => letter.style.marginRight.value.value,
+                        x => letter.style.marginRight = x,
+                        0f,
+                        marginDuration
+                    ).SetEase(Ease.OutSine);
+                }
+                else
+                {
+                    marginCorrectionTween = DOTween.To(
+                        () => letter.style.marginLeft.value.value,
+                        x => letter.style.marginLeft = x,
+                        0f,
+                        marginDuration
+                    ).SetEase(Ease.OutSine);
+                }
                 masterSequence.Append(marginCorrectionTween);
 
                 // (8) Final delay before looping the entire sequence.
