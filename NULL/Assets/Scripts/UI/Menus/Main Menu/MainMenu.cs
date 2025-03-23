@@ -1,7 +1,7 @@
-using NULL.UI.Menus;
+using NULL.UI.Menus.Main.View;
 using UnityEngine;
 
-namespace NULL
+namespace NULL.UI.Menus.Main
 {
     public class MainMenu : MonoBehaviour
     {
@@ -9,7 +9,8 @@ namespace NULL
 
         private void Awake()
         {
-            StartCoroutine(view.InitializeView(3));
+            // Get components
+            view = GetComponent<MainMenuView>();
         }
     }
 }
